@@ -94,6 +94,14 @@ streamlit run app.py
 ./run_demo.sh
 ```
 
+### Slides (Slidev)
+
+```bash
+cd docs/slides
+npm install
+npx @slidev/cli --open
+```
+
 ---
 
 ## Project Structure
@@ -114,7 +122,7 @@ AgentFramework/
 │   ├── alert.json          ← Payment-API P1 incident
 │   ├── alert2.json         ← Auth-service incident
 │   └── runbooks.json       ← OOMKilled, DB pool, circuit breaker runbooks
-└── docs/slides/            ← Slidev presentation (slides.md)
+└── docs/antigravity/slidev/ ← Slidev presentation (slides.md)
 ```
 
 ---
