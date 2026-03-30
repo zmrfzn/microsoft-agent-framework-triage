@@ -1,0 +1,35 @@
+[
+  {
+    "id": "RB-001",
+    "title": "OOMKilled Pod Recovery",
+    "tags": ["kubernetes", "oom", "memory"],
+    "steps": [
+      "Check pod memory requests/limits: kubectl describe pod <pod-name>",
+      "Review recent deployments for memory regression: kubectl rollout history deployment/payment-api",
+      "Temporarily increase memory limit: kubectl set resources deployment/payment-api --limits=memory=2Gi",
+      "If spike is sustained, scale horizontally: kubectl scale deployment/payment-api --replicas=6"
+    ]
+  },
+  {
+    "id": "RB-002",
+    "title": "Database Connection Pool Exhaustion",
+    "tags": ["database", "connection-pool", "timeout"],
+    "steps": [
+      "Check active DB connections: SELECT count(*) FROM pg_stat_activity WHERE state='active'",
+      "Identify long-running queries: SELECT pid, query, query_start FROM pg_stat_activity ORDER BY query_start",
+      "Kill blocking queries if needed: SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE now() - query_start > interval '5 minutes'",
+      "Increase pool size in config: PGPOOL_MAX_CONNECTIONS=50 and restart service"
+    ]
+  },
+  {
+    "id": "RB-003",
+    "title": "Circuit Breaker Open — Cascading Failure",
+    "tags": ["circuit-breaker", "cascading", "resilience"],
+    "steps": [
+      "Identify which downstream service triggered the open state in service mesh dashboard",
+      "Check billing-service health: curl -s https://billing-service/health",
+      "If billing-service is recovering, wait for circuit half-open state (default: 60s)",
+      "If sustained, route payment-api to fallback: kubectl set env deployment/payment-api BILLING_FALLBACK=true"
+    ]
+  }
+]

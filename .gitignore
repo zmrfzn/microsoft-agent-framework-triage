@@ -1,0 +1,11 @@
+.venv/
+.env
+__pycache__/
+*.pyc
+*.pyo
+.DS_Store
+.claude/
+newrelic-agent.log
+docs/antigravity/
+docs/superpowers/
+docs/foundry-tracing-investigation.md

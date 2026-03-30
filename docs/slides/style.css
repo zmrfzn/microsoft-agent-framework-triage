@@ -1,0 +1,23 @@
+/* Global style overrides for Slidev deck */
+
+/* Increase h3 subtitle size (currently too small after h1 titles) */
+.slidev-layout h3 {
+  font-size: 1.35em !important;
+  margin-top: 0.3em;
+  opacity: 0.9;
+}
+
+/* Increase blockquote/callout text size */
+.slidev-layout blockquote {
+  font-size: 1.15em !important;
+}
+
+/* Increase base paragraph size slightly */
+.slidev-layout p {
+  font-size: 1.05em;
+}
+
+/* Increase list item size */
+.slidev-layout li {
+  font-size: 1.05em;
+}

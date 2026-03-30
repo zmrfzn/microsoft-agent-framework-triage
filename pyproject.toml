@@ -1,0 +1,13 @@
+[project]
+name = "maf-incident-triage"
+version = "0.1.0"
+description = "MAF Incident Triage Demo — Experts Live India"
+requires-python = ">=3.11"
+dependencies = [
+    "agent-framework[azure]>=1.0.0rc5",
+    "azure-identity>=1.26.0b2",
+    "python-dotenv>=1.0.0",
+]
+
+[tool.uv]
+prerelease = "allow"

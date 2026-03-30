@@ -1,0 +1,15 @@
+{
+  "alert_id": "INC-20240315-0042",
+  "timestamp": "2024-03-15T14:32:10Z",
+  "service": "payment-api",
+  "environment": "production",
+  "severity_raw": "critical",
+  "title": "High CPU + memory spike on payment-api pods",
+  "description": "CPU utilization at 94% (threshold: 80%), memory at 87% (threshold: 75%). Three pods in CrashLoopBackOff. P95 latency spiked to 12s (SLA: 2s). Error rate 18% (threshold: 1%).",
+  "logs_snippet": [
+    "2024-03-15T14:30:01Z ERROR OOMKilled: container payment-worker killed",
+    "2024-03-15T14:30:45Z ERROR Failed to connect to DB pool: connection timeout after 30s",
+    "2024-03-15T14:31:02Z WARN  Circuit breaker OPEN for downstream billing-service",
+    "2024-03-15T14:31:55Z ERROR java.lang.OutOfMemoryError: GC overhead limit exceeded"
+  ]
+}

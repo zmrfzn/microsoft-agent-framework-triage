@@ -1,0 +1,15 @@
+{
+  "alert_id": "INC-20240822-0117",
+  "timestamp": "2024-08-22T09:14:33Z",
+  "service": "auth-service",
+  "environment": "production",
+  "severity_raw": "high",
+  "title": "Auth service token validation latency spike + elevated 5xx errors",
+  "description": "P95 latency on /token/validate endpoint spiked to 8.4s (SLA: 1s). Error rate at 12% (threshold: 1%). CPU stable at 45%, memory at 52%. Redis cache hit rate dropped from 94% to 31%. 2 of 4 pods in Pending state due to node pressure.",
+  "logs_snippet": [
+    "2024-08-22T09:12:01Z ERROR Redis connection pool exhausted: max 50 connections reached",
+    "2024-08-22T09:12:44Z WARN  Token validation cache miss rate: 69% (expected <6%)",
+    "2024-08-22T09:13:15Z ERROR Downstream identity-provider timeout after 5000ms",
+    "2024-08-22T09:13:58Z ERROR TooManyRequestsException: identity-provider rate limit hit (429)"
+  ]
+}
