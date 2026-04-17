@@ -90,8 +90,8 @@ def make_client() -> OpenAIChatClient:
         http_client=httpx.AsyncClient(verify=ssl_verify),
     )
     return OpenAIChatClient(
+        model=os.environ.get("AZURE_OPENAI_CHAT_DEPLOYMENT_NAME", "gpt-5-nano"),
         async_client=async_client,
-        deployment_name=os.environ.get("AZURE_OPENAI_CHAT_DEPLOYMENT_NAME", "gpt-5-nano"),
     )
 
 
