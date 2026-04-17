@@ -35,6 +35,7 @@ LogAgent   RunbookAgent  SeverityAgent
 - Python 3.11+
 - [`uv`](https://github.com/astral-sh/uv) package manager
 - Azure AI Foundry project with a deployed model
+- (Optional) [Docker](https://docs.docker.com/get-docker/) — for running Arize Phoenix locally
 - (Optional) New Relic account for APM + OTLP traces
 
 ---
@@ -59,9 +60,9 @@ cp .env.example .env
 ### Required `.env` vars
 
 ```env
-AZURE_AI_FOUNDRY_ENDPOINT=https://<your-hub>.cognitiveservices.azure.com/
-AZURE_AI_FOUNDRY_PROJECT=<your-project-name>
-AZURE_OPENAI_DEPLOYMENT=<model-deployment-name>
+AZURE_OPENAI_ENDPOINT=https://<your-hub>.cognitiveservices.azure.com/
+AZURE_OPENAI_CHAT_DEPLOYMENT_NAME=<model-deployment-name>
+AZURE_OPENAI_API_KEY=<your-api-key>
 
 # Full span content (inputs/outputs in traces)
 ENABLE_SENSITIVE_DATA=true
@@ -70,6 +71,45 @@ AZURE_TRACING_GEN_AI_CONTENT_RECORDING_ENABLED=true
 # Corporate proxy SSL bypass (if needed)
 AZURE_OPENAI_DISABLE_SSL=true
 ```
+
+---
+
+## Observability
+
+The pipeline emits [OpenTelemetry](https://opentelemetry.io/) traces using the Gen AI semantic conventions (`gen_ai.*` spans). All three exporters below are optional and independently enabled via environment variables.
+
+### Arize Phoenix (local, OSS)
+
+[Arize Phoenix](https://phoenix.arize.com/) is a free, open-source observability UI that speaks standard OTLP — no SDK changes needed.
+
+```bash
+# Start Phoenix (data persists in ~/.phoenix)
+docker run -d -p 6006:6006 -v ~/.phoenix:/root/.phoenix \
+  --name phoenix arizephoenix/phoenix:latest
+```
+
+Then add to `.env`:
+
+```env
+PHOENIX_COLLECTOR_ENDPOINT=http://localhost:6006
+```
+
+Open [http://localhost:6006](http://localhost:6006) to view traces. Each triage run produces a `triage_pipeline` root span with all specialist and synthesis agent spans nested underneath.
+
+### Azure Monitor / Foundry Tracing
+
+```env
+APPLICATIONINSIGHTS_CONNECTION_STRING=<your-connection-string>
+```
+
+### New Relic
+
+```env
+NEW_RELIC_LICENSE_KEY=<your-ingest-license-key>
+# NEW_RELIC_OTLP_ENDPOINT=https://otlp.nr-data.net:4318/v1/traces  # EU: otlp.eu01.nr-data.net
+```
+
+All three exporters can be active simultaneously.
 
 ---
 
