@@ -1,8 +1,8 @@
 from agent_framework import Agent
-from agent_framework.azure import AzureOpenAIChatClient
+from agent_framework.openai import OpenAIChatClient
 
 
-def make_synthesis_agent(client: AzureOpenAIChatClient) -> Agent:
+def make_synthesis_agent(client: OpenAIChatClient) -> Agent:
     return Agent(
         client=client,
         name="SynthesisAgent",

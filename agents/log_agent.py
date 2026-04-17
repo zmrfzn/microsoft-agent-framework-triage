@@ -1,9 +1,9 @@
 from agent_framework import Agent
-from agent_framework.azure import AzureOpenAIChatClient
+from agent_framework.openai import OpenAIChatClient
 from tools import search_logs
 
 
-def make_log_agent(client: AzureOpenAIChatClient) -> Agent:
+def make_log_agent(client: OpenAIChatClient) -> Agent:
     return Agent(
         client=client,
         name="LogAnalysisAgent",

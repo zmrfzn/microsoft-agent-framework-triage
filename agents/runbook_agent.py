@@ -1,9 +1,9 @@
 from agent_framework import Agent
-from agent_framework.azure import AzureOpenAIChatClient
+from agent_framework.openai import OpenAIChatClient
 from tools import search_runbooks
 
 
-def make_runbook_agent(client: AzureOpenAIChatClient) -> Agent:
+def make_runbook_agent(client: OpenAIChatClient) -> Agent:
     return Agent(
         client=client,
         name="RunbookRAGAgent",

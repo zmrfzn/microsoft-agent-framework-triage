@@ -1,9 +1,9 @@
 from agent_framework import Agent
-from agent_framework.azure import AzureOpenAIChatClient
+from agent_framework.openai import OpenAIChatClient
 from tools import score_severity
 
 
-def make_severity_agent(client: AzureOpenAIChatClient) -> Agent:
+def make_severity_agent(client: OpenAIChatClient) -> Agent:
     return Agent(
         client=client,
         name="SeverityScorerAgent",

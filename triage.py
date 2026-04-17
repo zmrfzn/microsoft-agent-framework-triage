@@ -15,7 +15,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 from agent_framework.orchestrations import ConcurrentBuilder
-from agent_framework.azure import AzureOpenAIChatClient
+from agent_framework.openai import OpenAIChatClient
 from agents import make_log_agent, make_runbook_agent, make_severity_agent, make_synthesis_agent
 from tools import set_alert, _ALERTS
 
@@ -52,6 +52,15 @@ def _setup_tracing() -> None:
         )))
         exporters_enabled.append("New Relic")
 
+    if phoenix_endpoint := os.getenv("PHOENIX_COLLECTOR_ENDPOINT"):
+        from opentelemetry import trace
+        from opentelemetry.sdk.trace.export import BatchSpanProcessor
+        from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
+        trace.get_tracer_provider().add_span_processor(BatchSpanProcessor(OTLPSpanExporter(
+            endpoint=f"{phoenix_endpoint.rstrip('/')}/v1/traces",
+        )))
+        exporters_enabled.append("Arize Phoenix")
+
     if exporters_enabled:
         if "Azure Monitor" not in exporters_enabled:
             from agent_framework.observability import configure_otel_providers
@@ -64,7 +73,7 @@ _setup_tracing()
 ALERT = random.choice(_ALERTS) if _ALERTS and _ALERTS[0] else {}
 
 # ── Azure Client ──────────────────────────────────────────────────────────────
-def make_client() -> AzureOpenAIChatClient:
+def make_client() -> OpenAIChatClient:
     """Create Azure OpenAI client using API key and cognitiveservices endpoint."""
     import httpx
     from openai import AsyncAzureOpenAI
@@ -80,7 +89,7 @@ def make_client() -> AzureOpenAIChatClient:
         api_version=os.environ.get("AZURE_OPENAI_API_VERSION", "2024-12-01-preview"),
         http_client=httpx.AsyncClient(verify=ssl_verify),
     )
-    return AzureOpenAIChatClient(
+    return OpenAIChatClient(
         async_client=async_client,
         deployment_name=os.environ.get("AZURE_OPENAI_CHAT_DEPLOYMENT_NAME", "gpt-5-nano"),
     )
