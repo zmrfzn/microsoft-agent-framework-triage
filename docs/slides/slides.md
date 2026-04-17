@@ -33,6 +33,55 @@ lineNumbers: true
 
 ---
 transition: fade-out
+layout: two-cols
+---
+
+# *$whoami*
+
+<div class="flex flex-col justify-between h-4/5 mt-2">
+
+<div>
+
+### Zameer Fouzan
+**Lead Developer Relations Engineer - APJ**
+<br><span style="color: #00ef64; font-weight: 600;">New Relic</span>
+
+<br>
+
+- 🛠️ Passionate fullstack tinkerer
+- 📡 OpenTelemetry Advocate
+- ☁️ AWS Community Builder
+- 🗓️ With New Relic since 2022
+
+</div>
+
+<div class="flex items-center gap-4 pt-3 border-t border-white/20">
+  <img src="/linkedin-qr.png" class="w-32 h-32 rounded-lg" alt="LinkedIn QR" />
+  <div class="text-sm opacity-80">
+    🔗 <a href="https://linkedin.com/in/zmrfzn">linkedin.com/in/zmrfzn</a><br/>
+    <span class="opacity-60">Scan to connect</span>
+  </div>
+</div>
+
+</div>
+
+::right::
+
+<div class="flex items-center justify-center h-full">
+  <img src="/headshot.jpeg" class="w-52 h-52 rounded-full object-cover shadow-2xl ring-4 ring-white/20" alt="Zameer Fouzan" />
+</div>
+
+<!--
+⏱ TIME: 1 min
+🎙 TALKING POINTS:
+- Quick intro: name, role, one sentence on what you work on
+- "I spend my time helping teams ship real AI systems — not just demos"
+- Don't linger — let the QR do the work at the end
+📌 TRANSITION: "Let me start with a question I keep hearing from every team I talk to…"
+-->
+
+---
+transition: fade-out
 ---
 
 # The Question Everyone Is Asking
@@ -138,7 +187,9 @@ transition: slide-up
 
 ---
 transition: slide-left
+hide: true
 ---
+
 
 # What One Agent Can't Do Well
 
@@ -207,7 +258,7 @@ Each agent = a named OTel span. Debug any agent in isolation.
 
 <v-click>
 
-> **Microsoft TRIANGLE:** 97% triage accuracy · 600M logs/day &nbsp;|&nbsp; **BMW:** 12× faster fleet analysis
+> **Microsoft TRIANGLE** 97% triage accuracy · 600M logs/day &nbsp;|&nbsp; **BMW:** 12× faster fleet analysis
 
 </v-click>
 
@@ -234,7 +285,6 @@ transition: slide-left
 - 🔍 **Debugging:** How do you trace a failure across 4 agents?
 - 💸 **Cost:** Multi-agent = 3–10× token usage. Who's watching?
 
-<v-click>
 
 ### MAF's answer:
 
@@ -245,7 +295,7 @@ HandoffBuilder()      # fan-in: pass results to synthesis agent
 
 OTel tracing is **automatic**, one named span per agent call
 
-</v-click>
+
 
 <!--
 ⏱ TIME: 2 min
@@ -295,7 +345,7 @@ transition: slide-up
 
 <v-click>
 
-> Today we build **Level 3**. Most production systems are still Level 1.
+> Today we build **Level 3**. Most production systems are still __Level 1__.
 
 </v-click>
 
