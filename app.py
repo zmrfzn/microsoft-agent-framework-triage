@@ -206,7 +206,21 @@ def show_idle_diagram():
         )
 
 async def run_triage_with_events(alert: dict, placeholders: dict) -> tuple[str, dict]:
-    """Run the triage pipeline, updating Streamlit placeholders as events fire."""
+    """Wrap the pipeline in a root OTel span so all agent spans share a common parent."""
+    from agent_framework.observability import get_tracer
+    tracer = get_tracer("maf-incident-triage")
+    with tracer.start_as_current_span(
+        "triage_pipeline",
+        attributes={
+            "alert.id": alert.get("alert_id", "unknown"),
+            "alert.service": alert.get("service", "unknown"),
+            "alert.severity": alert.get("severity_raw", "unknown"),
+        },
+    ):
+        return await _run_triage_with_events_inner(alert, placeholders)
+
+
+async def _run_triage_with_events_inner(alert: dict, placeholders: dict) -> tuple[str, dict]:
     from triage import make_client, make_log_agent, make_runbook_agent, make_severity_agent, make_synthesis_agent
     from agent_framework.orchestrations import ConcurrentBuilder
     from agent_framework._types import AgentResponse
