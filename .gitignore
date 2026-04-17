@@ -9,3 +9,4 @@ newrelic-agent.log
 docs/antigravity/
 docs/superpowers/
 docs/foundry-tracing-investigation.md
+.worktrees/
