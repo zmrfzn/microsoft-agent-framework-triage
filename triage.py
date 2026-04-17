@@ -26,8 +26,9 @@ def _setup_tracing() -> None:
     from agent_framework.observability import enable_instrumentation, create_resource, create_metric_views
     exporters_enabled = []
 
+    os.environ.setdefault("OTEL_SERVICE_NAME", "maf-incident-triage")
+
     if conn_str := os.getenv("APPLICATIONINSIGHTS_CONNECTION_STRING"):
-        os.environ.setdefault("OTEL_SERVICE_NAME", "maf-incident-triage")
         from azure.monitor.opentelemetry import configure_azure_monitor
         configure_azure_monitor(
             connection_string=conn_str,
@@ -36,7 +37,32 @@ def _setup_tracing() -> None:
         )
         enable_instrumentation(enable_sensitive_data=True)
         exporters_enabled.append("Azure Monitor")
+    else:
+        # No Azure Monitor: wire Phoenix via standard OTLP env var so
+        # configure_otel_providers() picks it up and owns the single provider.
+        if phoenix_endpoint := os.getenv("PHOENIX_COLLECTOR_ENDPOINT"):
+            os.environ.setdefault(
+                "OTEL_EXPORTER_OTLP_TRACES_ENDPOINT",
+                f"{phoenix_endpoint.rstrip('/')}/v1/traces",
+            )
+            exporters_enabled.append("Arize Phoenix")
 
+        if exporters_enabled or os.getenv("NEW_RELIC_LICENSE_KEY"):
+            from agent_framework.observability import configure_otel_providers
+            configure_otel_providers()
+
+    # Phoenix alongside Azure Monitor: add processor to Azure Monitor's provider.
+    if "Azure Monitor" in exporters_enabled:
+        if phoenix_endpoint := os.getenv("PHOENIX_COLLECTOR_ENDPOINT"):
+            from opentelemetry import trace
+            from opentelemetry.sdk.trace.export import BatchSpanProcessor
+            from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
+            trace.get_tracer_provider().add_span_processor(BatchSpanProcessor(OTLPSpanExporter(
+                endpoint=f"{phoenix_endpoint.rstrip('/')}/v1/traces",
+            )))
+            exporters_enabled.append("Arize Phoenix")
+
+    # NR always added via add_span_processor (needs a custom SSL-bypassing session).
     if nr_key := os.getenv("NEW_RELIC_LICENSE_KEY"):
         import requests
         from opentelemetry import trace
@@ -52,19 +78,7 @@ def _setup_tracing() -> None:
         )))
         exporters_enabled.append("New Relic")
 
-    if phoenix_endpoint := os.getenv("PHOENIX_COLLECTOR_ENDPOINT"):
-        from opentelemetry import trace
-        from opentelemetry.sdk.trace.export import BatchSpanProcessor
-        from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
-        trace.get_tracer_provider().add_span_processor(BatchSpanProcessor(OTLPSpanExporter(
-            endpoint=f"{phoenix_endpoint.rstrip('/')}/v1/traces",
-        )))
-        exporters_enabled.append("Arize Phoenix")
-
     if exporters_enabled:
-        if "Azure Monitor" not in exporters_enabled:
-            from agent_framework.observability import configure_otel_providers
-            configure_otel_providers()
         print(f"OTel tracing → {', '.join(exporters_enabled)}")
 
 _setup_tracing()
@@ -97,8 +111,8 @@ def make_client() -> OpenAIChatClient:
 
 # ── Pipeline ──────────────────────────────────────────────────────────────────
 async def run_triage(alert: dict) -> str:
-    from opentelemetry import trace
-    tracer = trace.get_tracer("maf-incident-triage")
+    from agent_framework.observability import get_tracer
+    tracer = get_tracer("maf-incident-triage")
 
     with tracer.start_as_current_span(
         "triage_pipeline",
